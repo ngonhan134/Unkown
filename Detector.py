@@ -51,12 +51,13 @@ def main_app(name):
                     continue
                 imgaeResize = IncreaseContrast(frame)
                 imgaeRGB = imgaeResize
-                imgaeResize.flags.writeable = False
-                
+                imgaeResize.flags.writeable = True
+                # print(imgaeResize.flags.writeable)
                 
                 results = hands.process(imgaeResize)
+                # print(results)
                 # cv2.imshow("RESIZE ", imgaeResize)
-                cropped_image = cv2.cvtColor(imgaeResize, cv2.COLOR_BGR2GRAY)
+                cropped_image = imgaeResize
                 h = cropped_image.shape[0]
                 w = cropped_image.shape[1]
                 # print("Dua tay vao di ban")
@@ -119,20 +120,20 @@ def main_app(name):
                             uy = point_1[1] + (point_2-point_1)[0]//3
                             lx = point_2[0]
                             ly = point_2[1] + 4*(point_2-point_1)[0]//3
-                            roi_zone_img = cv2.cvtColor(align_img, cv2.COLOR_GRAY2BGR)
+                            roi_zone_img = align_img
 
                             print(uy, ly, ux, lx)
                             roi_img = align_img[uy:ly + 85, ux:lx + 85]
-                            roi_img = cv2.resize(roi_img, (128,128))
+                            roi_img = cv2.resize(roi_img, (64,64))
                             
-                            roi_img=cv2.cvtColor(roi_img,cv2.COLOR_RGB2BGR)
-                            cv2.imwrite("nhan.bmp",roi_img)
+                            # roi_img=cv2.cvtColor(roi_img,cv2.COLOR_RGB2BGR)
+                            # cv2.imwrite("nhan.bmp",roi_img)
                             feature = LMTRP.LMTRP_process(roi_img)
                             feature = feature.reshape(1, -1)
                             # print(feature)
                             decision = recognizer.decision_function(feature)
                             confidence = 1 / (1 + np.exp(-decision))
-
+                            predict=recognizer.predict(feature)
               
                             threshold=0.58
 
@@ -140,7 +141,7 @@ def main_app(name):
                             print(confidence)
                             
                             pred = 0
-                            if confidence >= threshold:
+                            if predict[0]==1:
                                 #if u want to print confidence level
                                         #confidence = 100 - int(confidence)
                                         pred = pred+1
@@ -150,11 +151,11 @@ def main_app(name):
                                         # font = cv2.FONT_HERSHEY_PLAIN
                                         # frame = cv2.rectangle(frame, (ux, uy), (lx, ly), (0, 255, 0), 2)
                                         # frame = cv2.putText(frame, text, (ux, uy-4), font, 1, (0, 255, 0), 1, cv2.LINE_AA)
-                                        dim =(124,124)
+                                        dim =(128,128)
                                         
-                                        img1 = cv2.imread(f".\\data\\{name}\\{pred}{name}.bmp", cv2.IMREAD_UNCHANGED)
-                                        resized = cv2.resize(img1, dim, interpolation = cv2.INTER_AREA)
-                                        cv2.imwrite(f".\\data\\{name}\\50{name}.bmp", resized)
+                                        # img1 = cv2.imread(f".\\data\\{name}\\{pred}{name}.bmp", cv2.IMREAD_UNCHANGED)
+                                        # resized = cv2.resize(img1, dim, interpolation = cv2.INTER_AREA)
+                                        # cv2.imwrite(f".\\data\\{name}\\50{name}.bmp", resized)
                                         Image1 = Image.open(f".\\2.png") 
                                         
                                         # make a copy the image so that the  

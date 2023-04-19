@@ -47,7 +47,7 @@ def start_capture(name):
                 num_of_images = len([entry for entry in os.listdir(path) if os.path.isfile(os.path.join(path, entry))]) + 1
                 
                 print("self.valueOfImage", num_of_images)
-                if (num_of_images < 117 ):
+                if (num_of_images < 45 ):
                    
                     success, image = cap.read()
                     print(image.shape)
@@ -180,7 +180,7 @@ def start_capture(name):
                                 cv2.imwrite(str(path + "/" + str(num_of_images)+name + ".bmp"), roi_img)
                                 # print(valueOfImage)
                                 
-                        if cv2.waitKey(5) & 0xFF == 27 or num_of_images > 115 :
+                        if cv2.waitKey(5) & 0xFF == 27 or num_of_images > 40 :
                             break
 
                     except:

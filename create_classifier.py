@@ -20,6 +20,7 @@ def train_classifer(name):
         for file in files:
             imgpath = os.path.join(root, file)
             img = cv2.imread(imgpath)
+            img = cv2.resize(img, (64,64))
             feature = LMTRP.LMTRP_process(img) # extract feature from image
             features.append(feature)
             num_images += 1
@@ -34,6 +35,7 @@ def train_classifer(name):
         for file in files:
             imgpath = os.path.join(root, file)
             img = cv2.imread(imgpath)
+            img = cv2.resize(img, (64,64))
             feature = LMTRP.LMTRP_process(img) # extract feature from image
             features.append(feature)
             num_images += 1
@@ -43,20 +45,21 @@ def train_classifer(name):
     features = np.asarray(features)
     labels = np.asarray(labels)
     features = features.reshape(features.shape[0],-1)
-
+    print(features.shape)
+    print(labels)
     # Define the parameters for SVM
 
     param_grid = {'C': [1, 10, 100, 1000,10000],
               'gamma': [0.1,0.01,0.001, 0.0001,1],
-              'kernel': ['rbf','linear','poly']}
+              'kernel': ['rbf']}
 
-    model = GridSearchCV(svm.SVC(class_weight='balanced'), param_grid=param_grid, n_jobs=-1,verbose=3)
+    model = GridSearchCV(svm.SVC(), param_grid=param_grid, n_jobs=-1,verbose=3)
     model.fit(features, labels)
     best_params = model.best_params_
     print("Best hyperparameters: ", best_params)
 
     # Initialize the SVM model with best hyperparameters
-    best_svm = svm.SVC(kernel=best_params['kernel'], C=best_params['C'], gamma=best_params['gamma'], class_weight='balanced')
+    best_svm = svm.SVC(kernel=best_params['kernel'], C=best_params['C'], gamma=best_params['gamma'])
 
     # Train the SVM with the best hyperparameters
     best_svm.fit(features, labels)
@@ -73,7 +76,7 @@ def predict(image_path, threshold=0.5):
     # Extract features from the input image
     feature = LMTRP.LMTRP_process(cv2.imread(image_path))
     feature = feature.reshape(1, -1)
-
+    x=svm_model.predict(feature)
     # Predict the label of the input image and get the decision function value
     decision = svm_model.decision_function(feature)
 
@@ -81,10 +84,10 @@ def predict(image_path, threshold=0.5):
     confidence = 1 / (1 + np.exp(-decision))
     print(confidence)
     # Check if the predicted label is 1 (true) or -1 (false) based on the threshold
-    if confidence >= threshold:
+    if x==1:
         print("Access granted!")
     else:
         print("Access denied.")
 
 # train_classifer("nhan")
-# predict('002_18.bmp')
+# predict('./random/roinhan.bmp')

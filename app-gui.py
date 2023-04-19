@@ -162,7 +162,7 @@ class PageThree(tk.Frame):
         self.numimglabel.config(text=str("Number of images captured = "+str(x)))
 
     def trainmodel(self):
-        if self.controller.num_of_images < 115:
+        if self.controller.num_of_images < 45:
             messagebox.showerror("ERROR", "No enough Data, Capture at least 200 images!")
             return
         train_classifer(self.controller.active_name)
