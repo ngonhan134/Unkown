@@ -224,4 +224,4 @@ def main_app(name):
             cap.release()
             cv2.destroyAllWindows()
                 
-# main_app("nhan")
+main_app("nhan")

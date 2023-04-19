@@ -9,7 +9,7 @@ from sklearn.model_selection import GridSearchCV
 def train_classifer(name):
     # Read all the images in custom data-set
     path1 = os.path.join(os.getcwd()+"/data/"+name+"/")  # path to images of authorized users
-    path2 = os.path.join(os.getcwd()+"/data/unknown/")  # path to images of unauthorized users
+    path2 = os.path.join(os.getcwd()+"/data/unknown1/")  # path to images of unauthorized users
 
     features = []
     labels = []
@@ -53,7 +53,7 @@ def train_classifer(name):
               'gamma': [0.1,0.01,0.001, 0.0001,1],
               'kernel': ['rbf']}
 
-    model = GridSearchCV(svm.SVC(), param_grid=param_grid, n_jobs=-1,verbose=3)
+    model = GridSearchCV(svm.SVC(), cv=10,param_grid=param_grid, n_jobs=-1,verbose=3)
     model.fit(features, labels)
     best_params = model.best_params_
     print("Best hyperparameters: ", best_params)
@@ -89,5 +89,5 @@ def predict(image_path, threshold=0.5):
     else:
         print("Access denied.")
 
-# train_classifer("nhan")
-# predict('./random/roinhan.bmp')
+train_classifer("nhan")
+# predict('./random/roiNhan.bmp')

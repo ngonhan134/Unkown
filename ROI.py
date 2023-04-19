@@ -7,11 +7,9 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 import os
-import LMTRP
-import joblib
-# import LMTrP
-# name="nhan"
-# recognizer=joblib.load(f"./data/classifiers/{name}_classifier.joblib")
+
+
+
 
 def is_valid(image):
 
@@ -63,9 +61,10 @@ def roiImageFromHand(path_out_img, option, cap):
             min_tracking_confidence=0.5) as hands:
         while cap.isOpened():
             if (option == 1): # option 1 is data collection
+                # valueOfImage=30
                 valueOfImage = len([entry for entry in os.listdir(path_out_img) if os.path.isfile(os.path.join(path_out_img, entry))]) + 1
                 print("self.valueOfImage", valueOfImage)
-                if (valueOfImage < 26):
+                if (valueOfImage <= 200 ):
                     success, image = cap.read()
                     print(image.shape)
                     if not success:
@@ -75,11 +74,17 @@ def roiImageFromHand(path_out_img, option, cap):
                     try:
 
                         imgaeResize = IncreaseContrast(image)
+                        # imgaeResize=cv2.flip(imgaeResize,1)
+                        # imgaeResize=cv2.resize(imgaeResize,(700,1280))
+                        # imgaeResize=cv2.rotate(imgaeResize,cv2.ROTATE_90_CLOCKWISE)
+                        # imgaeResize=cv2.rotate(imgaeResize,cv2.ROTATE_90_COUNTERCLOCKWISE)
+                        # imgaeResize=cv2.rotate(imgaeResize,cv2.ROTATE_180)
+
 
                         imageOutput = imgaeResize
 
-                        #cv2.imshow("DEFAULT ", image)
-                        cv2.imshow("RESIZE ", imgaeResize)
+                        cv2.imshow("DEFAULT ", imgaeResize)
+                        # cv2.imshow("RESIZE ", imgaeResize)
 
                         imgaeRGB = imgaeResize
                         imgaeResize.flags.writeable = False
@@ -88,7 +93,7 @@ def roiImageFromHand(path_out_img, option, cap):
                         results = hands.process(imgaeResize)
                         # print(results)
 
-                        cropped_image = cv2.cvtColor(imgaeResize, cv2.COLOR_BGR2GRAY)
+                        cropped_image = imgaeResize
 
                         h = cropped_image.shape[0]
                         w = cropped_image.shape[1]
@@ -121,7 +126,7 @@ def roiImageFromHand(path_out_img, option, cap):
                                 x2 = (pixelCoordinatesLandmarkPoint5[0] + pixelCoordinatesLandmarkPoint9[0]) / 2 - 50
                                 y2 = (pixelCoordinatesLandmarkPoint5[1] + pixelCoordinatesLandmarkPoint9[1]) / 2 - 50
                                 #sau khi cos 4 diem
-                                #h, w = cropped_image.shape
+                                # h, w = cropped_image.shape
                                 theta = np.arctan2((y2 - y1), (x2 - x1))*180/np.pi 
 
 
@@ -138,7 +143,7 @@ def roiImageFromHand(path_out_img, option, cap):
                         results = hands.process(imgaeRGB)
                         # print(results)
 
-                        cropped_image = cv2.cvtColor(imgaeRGB, cv2.COLOR_BGR2GRAY)
+                        cropped_image = imgaeRGB
 
                         h = cropped_image.shape[0]
                         w = cropped_image.shape[1]
@@ -257,17 +262,16 @@ def roiImageFromHand(path_out_img, option, cap):
 
                                 # cv2.rectangle(roi_zone_img, (lxROI, lyROI),
                                 #     (uxROI, uyROI), (0, 255, 0), 2)
-
                                 # cv2.imshow("roi_zone_img", roi_zone_img)
 
                                 # valueOfImage = len([entry for entry in os.listdir(path_out_img) if os.path.isfile(os.path.join(path_out_img, entry))]) + 1
-                                path = path_out_img + "/01_000" + str(valueOfImage) + ".bmp"
+                                path = path_out_img + "/010_73_" + str(valueOfImage) + ".bmp"
 
 
                                 roi_img = align_img[uyROI:lyROI, uxROI:lxROI]
+ 
 
-
-                                roi_img = cv2.resize(roi_img, (128, 128))
+                                roi_img = cv2.resize(roi_img, (128,128))
 
 
                                 #roi_img = LMTrP.LMTRP_processWithImage(roi_img)
@@ -284,7 +288,7 @@ def roiImageFromHand(path_out_img, option, cap):
                     break
             else:
                 valueOfImage = len([entry for entry in os.listdir(path_out_img) if os.path.isfile(os.path.join(path_out_img, entry))]) + 1
-                if (valueOfImage <= 30):
+                if (valueOfImage <= 10):
                     success, image = cap.read()
                     if not success:
                         print("Ignoring empty camera frame.")
@@ -297,13 +301,13 @@ def roiImageFromHand(path_out_img, option, cap):
                         imageOutput = imgaeResize
 
                         #cv2.imshow("DEFAULT ", image)
-                        cv2.imshow("RESIZE ", imgaeResize)
+                        # cv2.imshow("RESIZE ", imgaeResize)
                         imgaeResize.flags.writeable = False
                         #image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                         results = hands.process(imgaeResize)
                         # print(results)
 
-                        cropped_image = cv2.cvtColor(imgaeResize, cv2.COLOR_BGR2GRAY)
+                        cropped_image = imgaeResize
 
                         h = cropped_image.shape[0]
                         w = cropped_image.shape[1]
@@ -331,10 +335,10 @@ def roiImageFromHand(path_out_img, option, cap):
                                 center17 = np.array(
                                     [np.mean(hand_landmark.landmark[17].x)*w, np.mean(hand_landmark.landmark[17].y)*h]).astype('int32')
                                 # # for checking the center
-                                cv2.circle(imgaeResize, tuple(center5), 10, (255, 0, 0), 1)
-                                cv2.circle(imgaeResize, tuple(center9), 10, (255, 0, 0), 1)
-                                cv2.circle(imgaeResize, tuple(center13), 10, (255, 0, 0), 1)
-                                cv2.circle(imgaeResize, tuple(center17), 10, (255, 0, 0), 1)
+                                # cv2.circle(imgaeResize, tuple(center5), 10, (255, 0, 0), 1)
+                                # cv2.circle(imgaeResize, tuple(center9), 10, (255, 0, 0), 1)
+                                # cv2.circle(imgaeResize, tuple(center13), 10, (255, 0, 0), 1)
+                                # cv2.circle(imgaeResize, tuple(center17), 10, (255, 0, 0), 1)
 
                                 cropped_image = cropped_image[0:pixelCoordinatesLandmarkPoint0[1] + 50, 0:pixelCoordinatesLandmarkPoint5[0] + 100]
 
@@ -382,31 +386,20 @@ def roiImageFromHand(path_out_img, option, cap):
                                     ly = point_2[1] + 4*(point_2-point_1)[0]//3
 
 
-                                    roi_zone_img = cv2.cvtColor(align_img, cv2.COLOR_GRAY2BGR)
+                                    roi_zone_img =align_img
                                     
 
                                     # self.valueOfImage = len([entry for entry in os.listdir(path_out_img) if os.path.isfile(os.path.join(path_out_img, entry))]) + 1
-                                    path = path_out_img + "/1_000" + str(valueOfImage) + ".bmp"
+                                    path = path_out_img + "/0001_000" + str(valueOfImage) + ".bmp"
 
-                                    cv2.rectangle(roi_zone_img, (lx, ly),
-                                                (ux, uy), (0, 255, 0), 2)
+                                    # cv2.rectangle(roi_zone_img, (lx, ly),
+                                    #             (ux, uy), (0, 255, 0), 2)
 
                                     print(uy, ly, ux, lx)
 
                                     roi_img = align_img[uy:ly + 85, ux:lx + 85]
-                                    roi_img = cv2.resize(roi_img, (128, 128))
-                                    roi_img=cv2.cvtColor(roi_img,cv2.COLOR_GRAY2BGR)
-                                    print(roi_img.shape)
+                                    roi_img = cv2.resize(roi_img, (64, 64))
                                     cv2.imwrite(path, roi_img)
-                                    feature=LMTRP.LMTRP_process(roi_img)
-                                    feature = feature.flatten()
-                                    print(feature)
-                                    print(confidence)
-                                    confidence = recognizer.predict([feature])
-                                    if confidence[0] == 1:
-                                        print("CO ng o day ne ddcmmmmdsahdsadd")
-                                    else :
-                                        print("DEO CO AI HET DCM")                                    
                                     
                     except:
                         print("loi ROI")
@@ -416,5 +409,8 @@ def roiImageFromHand(path_out_img, option, cap):
             
     #cap.release()
     return 1
+# path_out_img = "./ROI/"
+# # roiImageFromHand(path_out_img="./ROI/",option=1,cap=cv2.VideoCapture('./test_images/Video/Thai_trai/T1.mp4'))
+roiImageFromHand(path_out_img="./ROI1/",option=2,cap=cv2.VideoCapture(0))
 
-# roiImageFromHand(path_out_img="./ROI/",option=2,cap=cv2.VideoCapture(0))
+# # print(is_valid(cv2.imread("./roi/0001_00011.bmp")))
